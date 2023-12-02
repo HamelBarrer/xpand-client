@@ -48,3 +48,15 @@ export const updateNoteService = async (noteId: number, note: Note) => {
 
   return dataJson as Note;
 };
+
+export const deleteNoteService = async (noteId: number) => {
+  const response = await fetchBasic(`${ENDPOINTS.NOTE}/${noteId}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const dataJson = await response.json();
+
+  return dataJson as Note;
+};
