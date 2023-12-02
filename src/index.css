@@ -1,3 +1,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  text-decoration: none;
+  border: none;
+  background: none;
+  outline: none;
+  box-sizing: border-box;
+  cursor: default;
+}
+
+body {
+  background-color: #f0f2f5;
+}
+
+.scroll::-webkit-scrollbar {
+  width: 0.3rem;
+}
+
+.scroll::-webkit-scrollbar-track {
+  border-radius: 0.5rem;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.scroll::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
