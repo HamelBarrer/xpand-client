@@ -1,22 +1,23 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import FormNote from './components/note/FormNote';
 import DangerIcon from './components/ui/icons/DangerIcon';
 import EyeIcon from './components/ui/icons/EyeIcon';
 import TrashIcon from './components/ui/icons/TrashIcon';
 import Modal from './components/ui/modal/Modal';
-import { deleteNoteService, listNoteService } from './services/note.service';
+import useListNote from './hooks/useListNote';
+import { deleteNoteService } from './services/note.service';
 import { Note } from './types/note.type';
 import { parseDateUtil } from './utils/date.util';
 
 const App = () => {
-  const [notes, setNotes] = useState<Note[]>([]);
+  const { notes, isLoading } = useListNote();
+
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [viewNote, setViewNote] = useState<Note | null>(null);
   const [removeNote, setRemoveNote] = useState<Note | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [openModalViewNote, setOpenModalViewNote] = useState(false);
   const [openModelRemoveNote, setOpenModelRemoveNote] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   const handleAddNoteClick = () => {
     setOpenModal(true);
@@ -52,39 +53,33 @@ const App = () => {
     await deleteNoteService(note.noteId!);
   };
 
-  useEffect(() => {
-    setLoading(true);
-    listNoteService()
-      .then((res) => setNotes(res))
-      .finally(() => setLoading(false));
-  }, []);
-
   return (
     <main className="grid place-items-center w-screen h-screen">
       <div>
+        <h1 className="font-bold text-5xl mb-6">Notes</h1>
         <button
           className="bg-green-600 text-white px-4 py-2 rounded-xl duration-500 hover:bg-green-700"
           onClick={handleAddNoteClick}
         >
           Add note
         </button>
-        <section className="flex flex-col mt-8 w-[30rem] rounded-2xl overflow-auto shadow-md h-[24.3rem] scroll">
-          {loading ? (
+        <section className="flex flex-col mt-8 w-[30rem] overflow-auto h-[24.3rem] scroll gap-3">
+          {isLoading ? (
             <div className="w-full h-full grid place-items-center">
               <div className="loader"></div>
             </div>
           ) : (
             <>
-              {notes.map((note, index) => (
+              {notes.map((note) => (
                 <article
                   key={note.noteId}
-                  className={`relative flex flex-col bg-white p-6 cursor-pointer duration-300x gap-3 h-24 ${
-                    index !== notes.length - 1 ? 'border-b border-gray-300' : ''
-                  } hover:bg-gray-200`}
-                  style={{ marginBottom: '1px' }}
+                  className={`group relative flex flex-col rounded-2xl bg-white p-6 cursor-pointer duration-300x gap-3 hover:bg-gray-200`}
+                  style={{
+                    backgroundColor: '#fbfbfb',
+                  }}
                   onClick={() => handleNoteClick(note)}
                 >
-                  <div className="absolute top-1 right-2 flex items-center justify-center gap-1">
+                  <div className="hidden absolute top-1 right-2 group-hover:flex items-center justify-center gap-1">
                     <button onClick={(e) => handleViewNoteClick(e, note)}>
                       <EyeIcon />
                     </button>
@@ -95,11 +90,11 @@ const App = () => {
                       <TrashIcon size={19} />
                     </button>
                   </div>
-                  <div className="flex justify-between">
-                    <h6>{note.title}</h6>
-                    <p>{parseDateUtil(new Date(note.createdAt!))}</p>
-                  </div>
-                  <p>{note.description}</p>
+                  <h6 className="font-bold text-lg">{note.title}</h6>
+                  <p className="text-gray-500">{note.description}</p>
+                  <p className="text-gray-500">
+                    {parseDateUtil(new Date(note.createdAt!))}
+                  </p>
                 </article>
               ))}
             </>
@@ -110,12 +105,12 @@ const App = () => {
         )}
         {openModalViewNote && (
           <Modal setOpenModal={setOpenModalViewNote}>
-            <div className="flex items-center justify-between">
-              <h2 className="text-4xl">{viewNote?.title}</h2>
-              <p>{parseDateUtil(new Date(viewNote!.createdAt!))}</p>
-            </div>
-            <div className="flex justify-between">
+            <h2 className="text-4xl font-semibold">{viewNote?.title}</h2>
+            <div className="flex justify-between mt-2 text-gray-400">
               <p>{viewNote?.description}</p>
+            </div>
+            <div className="flex items-center justify-between text-gray-400">
+              <p>{parseDateUtil(new Date(viewNote!.createdAt!))}</p>
               <p>state: {viewNote?.noteState?.name}</p>
             </div>
           </Modal>
