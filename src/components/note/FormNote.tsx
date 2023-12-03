@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import useListNote from '../../hooks/useListNote';
 import {
   createNoteService,
   listNoteStateService,
@@ -12,11 +11,10 @@ import Modal from '../ui/modal/Modal';
 interface Props {
   setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
   note?: Note | null;
+  updateNotes: () => Promise<void>;
 }
 
-const FormNote = ({ setOpenModal, note }: Props) => {
-  const { fetchNotes } = useListNote();
-
+const FormNote = ({ setOpenModal, note, updateNotes }: Props) => {
   const [form, setForm] = useState({
     title: note?.title ?? '',
     description: note?.description ?? '',
@@ -49,11 +47,13 @@ const FormNote = ({ setOpenModal, note }: Props) => {
           description,
           noteStateId,
         });
-        await fetchNotes();
+        await updateNotes();
+        setOpenModal(false);
       } else {
         setErrorMessage('');
         await createNoteService({ title, description, noteStateId });
-        await fetchNotes();
+        await updateNotes();
+        setOpenModal(false);
       }
     } catch (error) {
       const err = error as Error;

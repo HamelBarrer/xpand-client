@@ -10,7 +10,7 @@ import { Note } from './types/note.type';
 import { parseDateUtil } from './utils/date.util';
 
 const App = () => {
-  const { notes, isLoading } = useListNote();
+  const { notes, isLoading, fetchNotes } = useListNote();
 
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [viewNote, setViewNote] = useState<Note | null>(null);
@@ -50,7 +50,13 @@ const App = () => {
   };
 
   const handleConfirmDeleteNoteClick = async (note: Note) => {
+    await updateNotes();
     await deleteNoteService(note.noteId!);
+    setOpenModelRemoveNote(false);
+  };
+
+  const updateNotes = async () => {
+    await fetchNotes();
   };
 
   return (
@@ -101,7 +107,11 @@ const App = () => {
           )}
         </section>
         {openModal && (
-          <FormNote setOpenModal={setOpenModal} note={selectedNote} />
+          <FormNote
+            setOpenModal={setOpenModal}
+            note={selectedNote}
+            updateNotes={updateNotes}
+          />
         )}
         {openModalViewNote && (
           <Modal setOpenModal={setOpenModalViewNote}>

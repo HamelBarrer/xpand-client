@@ -1,5 +1,5 @@
 export const API = {
-  API_BASE: 'http://localhost:3000/api/v1',
+  API_BASE: 'https://xpand-server-7ai6ky1mb-hamelbarrer.vercel.app/api/v1',
 };
 
 export const ENDPOINTS = {
